@@ -29,7 +29,7 @@ const helmet = require("helmet");
 // people off. e.g. `helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' })`
 
 // Use `helmet.hidePoweredBy()``
-
+app.use(helmet.hidePoweredBy({ setTo: "PHP 4.2.0" }));
 /** 3) Mitigate the risk of clickjacking - `helmet.frameguard()` */
 
 // Your page could be put in a <frame> or <iframe> without your consent.
@@ -42,7 +42,7 @@ const helmet = require("helmet");
 
 // We don't need our app to be framed, so you should use `helmet.frameguard()`
 // passing to it the configuration object `{action: 'deny'}`
-
+helmet.frameguard({ action: "deny" });
 /** 4) Mitigate the risk of XSS - `helmet.xssFilter()` */
 
 // Cross-site scripting (XSS) is a very frequent type of attack where malicious
@@ -63,7 +63,7 @@ const helmet = require("helmet");
 // It still has limited support.
 
 // Use `helmet.xssFilter()`
-
+helmet.xssFilter();
 /** 5) Avoid inferring the response MIME type - `helmet.noSniff()` */
 
 // Browsers can use content or MIME sniffing to override response `Content-Type`
@@ -74,7 +74,7 @@ const helmet = require("helmet");
 // instructing the browser to not bypass the provided `Content-Type`.
 
 // Use `helmet.noSniff()`
-
+helmet.noSniff();
 /** 6) Prevent IE from opening *untrusted* HTML - `helmet.ieNoOpen()` */
 
 // Some web applications will serve untrusted HTML for download. By default,
@@ -85,7 +85,7 @@ const helmet = require("helmet");
 // to prevent IE users from executing downloads in the *trusted* site's context.
 
 // Use `helmet.ieNoOpen()`
-
+helmet.ieNoOpen();
 /**  7) Ask browsers to access your site via HTTPS only - `helmet.hsts()` */
 
 // HTTP Strict Transport Security (HSTS) is a web security policy mechanism which
@@ -103,7 +103,7 @@ const helmet = require("helmet");
 // policy we will intercept and restore the header, after inspecting it for testing.
 
 var ninetyDaysInSeconds = 90 * 24 * 60 * 60;
-
+helmet.hsts({ maxAge: ninetyDaysInSeconds, force: true });
 //**Note**:
 // Configuring HTTPS on a custom website requires the acquisition of a domain,
 // and a SSL/TLS Certificate.
@@ -120,7 +120,7 @@ var ninetyDaysInSeconds = 90 * 24 * 60 * 60;
 // DNS prefetching, at the cost of a performance penalty.
 
 // Use `helmet.dnsPrefetchControl()`
-
+helmet.dnsPrefetchControl();
 /** 9) Disable Client-Side Caching - `helmet.noCache()` */
 
 // If you are releasing an update for your website, and you want your users
@@ -130,7 +130,7 @@ var ninetyDaysInSeconds = 90 * 24 * 60 * 60;
 // use this option only when there is a real need.
 
 // Use helmet.noCache()
-
+helmet.noCache();
 /** 10) Content Security Policy - `helmet.contentSecurityPolicy()` */
 
 // This challenge highlights one promising new defense that can significantly reduce
@@ -160,7 +160,14 @@ var ninetyDaysInSeconds = 90 * 24 * 60 * 60;
 // so it needs to be enclosed in **double quotes** to be working.
 
 /** TIP: */
-
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "trusted-cdn.com"]
+    }
+  })
+);
 // `app.use(helmet())` will automatically include all the middleware
 // presented above, except `noCache()`, and `contentSecurityPolicy()`,
 // but these can be enabled if necessary. You can also disable or
@@ -183,7 +190,7 @@ var ninetyDaysInSeconds = 90 * 24 * 60 * 60;
 // We introduced each middleware separately, for teaching purpose, and for
 // ease of testing. Using the 'parent' `helmet()` middleware is easiest, and
 // cleaner, for a real project.
-
+app.use(helmet());
 // ---- DO NOT EDIT BELOW THIS LINE ---------------------------------------
 
 module.exports = app;
